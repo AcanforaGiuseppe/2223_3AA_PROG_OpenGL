@@ -19,7 +19,7 @@ file(GLOB_RECURSE SOURCES ${CMAKE_SOURCE_DIR}/src/*.cpp)
 file(GLOB_RECURSE HEADERS ${CMAKE_SOURCE_DIR}/src/*.h ${CMAKE_SOURCE_DIR}/include/*.h)
 
 add_executable(${EXEC_PRJ} ${HEADERS} ${SOURCES})
-set_property(TARGET ${EXEC_PRJ} PROPERTY CXX_STANDARD 14)
+set_property(TARGET ${EXEC_PRJ} PROPERTY CXX_STANDARD 20)
 target_include_directories(${EXEC_PRJ} PRIVATE include src)
 
 #Library linking and Headers import 
