@@ -2,6 +2,7 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <format>
+#include "OGLWindow.h"
 
 #ifdef _WIN32
 extern "C" {
@@ -11,7 +12,7 @@ extern "C" {
 #endif
 
 
-int main() {
+int _main() {
 	std::cout << "It's Working" << std::endl;
 
 
@@ -73,5 +74,32 @@ int main() {
 	}
 
 	glfwDestroyWindow(window);
+	return 0;	
+}
+
+int main() {
+	std::cout << "It's Working" << std::endl;
+
+	OGLWindow Win{600, 400, "OpenGL Window"};
+
+	Win.PrintInfo();
+
+	float TimeElapsed = 0.f;
+	
+	while(Win.IsOpened()) 
+	{
+		float DeltaTime = Win.GetDeltaTime();
+		TimeElapsed += DeltaTime;
+		if (TimeElapsed >= 1.f)
+		{
+			TimeElapsed -= 1.f;
+			float Fps = 1.f / DeltaTime;
+			std::string Title = std::format("OpenGL App | DeltaTime: {} - FPS: {}", DeltaTime, Fps);
+			Win.SetTitle(Title);
+		}
+
+		Win.Update();
+	}
+
 	return 0;	
 }
