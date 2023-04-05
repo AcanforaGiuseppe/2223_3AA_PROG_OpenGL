@@ -5,13 +5,6 @@
 #include <fstream>
 #include <vector>
 
-struct Color {
-    float R;
-    float G;
-    float B;
-    float A;
-};
-
 void Ex04QuadColor::Start()
 {
     Program = new OGLProgram("resources/shaders/quadcolor.vert", "resources/shaders/quadcolor.frag");
