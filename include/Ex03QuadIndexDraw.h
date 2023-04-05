@@ -2,7 +2,7 @@
 #include <glad/glad.h>
 #include "OGLProgram.h"
 
-class Ex01TriangleDraw 
+class Ex03QuadIndexDraw 
 {
 public:
     void Start();
@@ -13,4 +13,5 @@ private:
     OGLProgram* Program;
     GLuint Vao;
     GLuint Vbo;
+    GLuint Ebo;
 };

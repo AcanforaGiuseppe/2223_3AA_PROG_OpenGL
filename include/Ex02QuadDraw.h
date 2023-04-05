@@ -1,5 +1,6 @@
 #pragma once
 #include <glad/glad.h>
+#include "OGLProgram.h"
 
 class Ex02QuadDraw 
 {
@@ -9,7 +10,7 @@ public:
     void Destroy();
 
 private:
-    GLuint ProgramId;
+    OGLProgram* Program;
     GLuint Vao;
     GLuint Vbo;
 };

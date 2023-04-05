@@ -5,6 +5,7 @@
 #include "OGLWindow.h"
 #include "Ex01TriangleDraw.h"
 #include "Ex02QuadDraw.h"
+#include "Ex03QuadIndexDraw.h"
 
 #ifdef _WIN32
 extern "C" {
@@ -23,7 +24,8 @@ int main() {
 	float TimeElapsed = 0.f;
 	
 	//Ex01TriangleDraw Scene;
-	Ex02QuadDraw Scene;
+	//Ex02QuadDraw Scene;
+	Ex03QuadIndexDraw Scene;
 	Scene.Start();
 
 	while(Win.IsOpened()) 
