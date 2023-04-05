@@ -94,3 +94,8 @@ void OGLProgram::Bind()
 {
     glUseProgram(ProgramId);
 }
+
+GLuint OGLProgram::ID() 
+{
+    return ProgramId;
+}
