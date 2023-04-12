@@ -48,10 +48,12 @@ void Ex04QuadColor::Start()
     glClearColor(0.5f, 0.5f, 0.5f, 1.f);
     Program->Bind();
 
+/*
     GLint BaseColorLoc = glGetUniformLocation(Program->ID(), "base_color");
     Color Blue{0, 0, 1, 1};
     GLfloat* BluePtr = (GLfloat*)&Blue;
     glUniform4fv(BaseColorLoc, 1, BluePtr);
+*/
 }
 
 void Ex04QuadColor::Update(float InDeltaTime)
@@ -68,7 +70,8 @@ void Ex04QuadColor::Update(float InDeltaTime)
     TimeColor.B = cosf(ElapsedTime + 1.1f) * 0.5f + 0.5f;
     TimeColor.A = 1.f;
 
-    glUniform4fv(glGetUniformLocation(Program->ID(), "base_color"), 1, (GLfloat*)&TimeColor);
+    //glUniform4fv(glGetUniformLocation(Program->ID(), "base_color"), 1, (GLfloat*)&TimeColor);
+    Program->SetUniform("base_color", TimeColor);
 }
 
 void Ex04QuadColor::Destroy()

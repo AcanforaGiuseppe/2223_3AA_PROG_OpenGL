@@ -1,4 +1,4 @@
-#include "Ex05QuadTextureDraw.h"
+#include "Ex06QuadPerspDraw.h"
 #include "Common.h" 
 #include <glad/glad.h>
 #include <string>
@@ -6,9 +6,9 @@
 #include <vector>
 
 
-void Ex05QuadTextureDraw::Start()
+void Ex06QuadPerspDraw::Start()
 {
-    Program = new OGLProgram("resources/shaders/quadtexture.vert", "resources/shaders/quadtexture.frag");
+    Program = new OGLProgram("resources/shaders/quadpersp.vert", "resources/shaders/quadpersp.frag");
     
     std::vector<float> Vertices = {
         // Positions        // Uvs
@@ -54,16 +54,6 @@ void Ex05QuadTextureDraw::Start()
     glClearColor(0.5f, 0.5f, 0.5f, 1.f);
     Program->Bind();
 
-/*
-    GLuint SmileTextureId = CreateTexture("resources/textures/smile.png");
-    GLuint WoodBoxTextureId = CreateTexture("resources/textures/wood-box.jpg");
-
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, SmileTextureId);
-
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, WoodBoxTextureId);
-*/  
     SmileText = new OGLTexture("resources/textures/smile.png");
     WoodText = new OGLTexture("resources/textures/wood-box.jpg");
 
@@ -75,25 +65,13 @@ void Ex05QuadTextureDraw::Start()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
-void Ex05QuadTextureDraw::Update(float InDeltaTime)
+void Ex06QuadPerspDraw::Update(float InDeltaTime)
 {
     glClear(GL_COLOR_BUFFER_BIT);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)0);
-
-    static float ElapsedTime = 0;
-    ElapsedTime += InDeltaTime;
-
-    Color TimeColor;
-    TimeColor.R = sinf(ElapsedTime) * 0.5f + 0.5f;
-    TimeColor.G = cosf(ElapsedTime) * 0.5f + 0.5f;
-    TimeColor.B = cosf(ElapsedTime + 1.1f) * 0.5f + 0.5f;
-    TimeColor.A = 1.f;
-
-    //glUniform4fv(glGetUniformLocation(Program->ID(), "base_color"), 1, (GLfloat*)&TimeColor);
-    Program->SetUniform("base_color", TimeColor);
 }
 
-void Ex05QuadTextureDraw::Destroy()
+void Ex06QuadPerspDraw::Destroy()
 {
     glDeleteVertexArrays(1, &Vao);
     glDeleteBuffers(1, &Vbo);

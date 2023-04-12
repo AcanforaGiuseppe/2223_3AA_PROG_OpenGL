@@ -3,7 +3,7 @@
 #include "OGLProgram.h"
 #include "OGLTexture.h"
 
-class Ex05QuadTextureDraw 
+class Ex06QuadPerspDraw 
 {
 public:
     void Start();
