@@ -9,12 +9,28 @@ void Ex04QuadColor::Start()
 {
     Program = new OGLProgram("resources/shaders/quadcolor.vert", "resources/shaders/quadcolor.frag");
     
+    /*
+    std::vector<float> Vertices = {
+        -0.5f,  0.5f, 0.f,  1.f, 0, 0,//top left
+        -0.5f, -0.5f, 0.f,  0.f, 0.f, 1, //bottom left
+         0.5f,  0.5f, 0.f,  0.f, 1.f, 0, //top right    
+         0.5f, -0.5f, 0.f,  1.f, 1.f, 0//bottom right
+    };
+    */
     std::vector<float> Vertices = {
         -0.5f,  0.5f, 0.f,  //top left
         -0.5f, -0.5f, 0.f,  //bottom left
          0.5f,  0.5f, 0.f,  //top right    
          0.5f, -0.5f, 0.f,  //bottom right
     };
+
+    std::vector<float> Colors = {
+        1.f, 0, 0,   //top left
+        0.f, 0.f, 1, //bottom left
+        0.f, 1.f, 0, //top right    
+        1.f, 1.f, 0  //bottom right
+    };
+
 
     std::vector<uint32_t> Indexes = {
         0, 1, 2, //Left Triangle
@@ -34,9 +50,28 @@ void Ex04QuadColor::Start()
 
     //3. Link to Vertex Shader
     GLuint Location_0 = 0;
+    //glVertexAttribPointer(Location_0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glVertexAttribPointer(Location_0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(Location_0);
+    /*
+    GLuint Location_1 = 1;
+    glVertexAttribPointer(Location_1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(Location_1);
+    */
 
+    //2. Create VBO to load data
+    GLuint ColorVbo;
+    glGenBuffers(1, &ColorVbo);
+    glBindBuffer(GL_ARRAY_BUFFER, ColorVbo);
+
+    DataSize = Colors.size() * sizeof(float);
+    glBufferData(GL_ARRAY_BUFFER, DataSize, Colors.data(), GL_STATIC_DRAW);
+
+    //3. Link to Vertex Shader
+    GLuint Location_1 = 1;
+    glVertexAttribPointer(Location_1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(Location_1);
+    
     //4. Crea EBO
     glGenBuffers(1, &Ebo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Ebo);
