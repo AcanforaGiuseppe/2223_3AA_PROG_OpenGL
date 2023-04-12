@@ -97,6 +97,7 @@ void Ex05QuadTextureDraw::Destroy()
 {
     glDeleteVertexArrays(1, &Vao);
     glDeleteBuffers(1, &Vbo);
+    glDeleteBuffers(1, &Ebo);
     delete Program;
     delete SmileText;
     delete WoodText;

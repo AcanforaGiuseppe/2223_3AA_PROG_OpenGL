@@ -60,5 +60,6 @@ void Ex03QuadIndexDraw::Destroy()
 {
     glDeleteVertexArrays(1, &Vao);
     glDeleteBuffers(1, &Vbo);
+    glDeleteBuffers(1, &Ebo);
     delete Program;
 }

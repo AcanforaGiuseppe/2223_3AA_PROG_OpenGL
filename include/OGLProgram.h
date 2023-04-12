@@ -11,6 +11,7 @@ public:
     void Bind();
     GLuint ID();
     void SetUniform(const std::string& name, const Color& color);
+    void SetUniform(const std::string& name, float value);
 private:
     GLuint ProgramId;
 };
