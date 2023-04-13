@@ -30,10 +30,10 @@ int main() {
 	//Ex01TriangleDraw Scene;
 	//Ex02QuadDraw Scene;
 	//Ex03QuadIndexDraw Scene;
-	Ex04QuadColor Scene;
+	//Ex04QuadColor Scene;
 	//Ex05QuadTextureDraw Scene;
 	//Ex06QuadPerspDraw Scene;
-	//Ex07CubePerspDraw Scene;
+	Ex07CubePerspDraw Scene;
 	Scene.Start();
 
 	while(Win.IsOpened()) 

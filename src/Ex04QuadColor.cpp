@@ -31,7 +31,6 @@ void Ex04QuadColor::Start()
         1.f, 1.f, 0  //bottom right
     };
 
-
     std::vector<uint32_t> Indexes = {
         0, 1, 2, //Left Triangle
         2, 3, 1, //Right Triangle
