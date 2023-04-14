@@ -14,6 +14,5 @@ private:
     OGLProgram* Program;
     GLuint Vao;
     GLuint Vbo;
-    OGLTexture* SmileText;
     OGLTexture* WoodText;
 };

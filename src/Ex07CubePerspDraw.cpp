@@ -86,18 +86,10 @@ void Ex07CubePerspDraw::Start()
     glClearColor(0.5f, 0.5f, 0.5f, 1.f);
     Program->Bind();
 
-    SmileText = new OGLTexture("resources/textures/smile.png");
     WoodText = new OGLTexture("resources/textures/wood-box.jpg");
-
-    SmileText->Bind(GL_TEXTURE0);
-    WoodText->Bind(GL_TEXTURE1);
-
-
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    WoodText->Bind(GL_TEXTURE0);
 
     glEnable(GL_DEPTH_TEST);
-
     glEnable(GL_CULL_FACE);
     glFrontFace(GL_CCW); //default
     glCullFace(GL_BACK); //default
@@ -120,6 +112,5 @@ void Ex07CubePerspDraw::Destroy()
     glDeleteVertexArrays(1, &Vao);
     glDeleteBuffers(1, &Vbo);
     delete Program;
-    delete SmileText;
     delete WoodText;
 }
