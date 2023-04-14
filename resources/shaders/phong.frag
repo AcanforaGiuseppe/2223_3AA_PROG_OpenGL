@@ -1,0 +1,29 @@
+#version 450 core
+out vec4 frag_color;
+
+layout (binding = 0) uniform sampler2D storm_tex; 
+in vec2 vert_uv_out;
+in vec3 vert_norm_out;
+uniform vec3 point_light_pos;
+
+void main() 
+{
+    vec4 storm_texel = texture(storm_tex, vert_uv_out);
+    //frag_color = storm_texel;
+    //frag_color = vec4(abs(vert_norm_out), 1.f);
+
+    vec3 mesh_color = storm_texel.xyz;
+
+    //Ambient
+    float ambient_factor = 0.2f;
+    vec3 ambient = mesh_color * ambient_factor;
+
+    //Diffuse
+
+    //Specular
+
+    vec3 phong = vec3(0.f);
+    phong += ambient;
+
+    frag_color = vec4(phong, 1.f);
+}

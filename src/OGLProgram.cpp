@@ -100,10 +100,21 @@ GLuint OGLProgram::ID()
     return ProgramId;
 }
 
- void OGLProgram::SetUniform(const std::string& name, const Color& color) {
+void OGLProgram::SetUniform(const std::string& name, const Color& color) {
        glUniform4fv(glGetUniformLocation(ID(), name.c_str()), 1, (GLfloat*)&color);
- }
+}
 
-  void OGLProgram::SetUniform(const std::string& name, float value) {
+void OGLProgram::SetUniform(const std::string& name, float value) {
        glUniform1f(glGetUniformLocation(ID(), name.c_str()), value);
- }
+}
+
+void OGLProgram::SetUniform(const std::string& name, glm::mat4 matrix) 
+{
+    glUniformMatrix4fv(glGetUniformLocation(ID(), name.c_str()), 1, GL_FALSE, &matrix[0][0]);
+}
+
+
+void OGLProgram::SetUniform(const std::string& name, glm::vec3 vect) 
+{
+    glUniform3fv(glGetUniformLocation(ID(), name.c_str()), 1, &vect[0]);
+}
