@@ -11,6 +11,7 @@
 #include "Ex06QuadPerspDraw.h"
 #include "Ex07CubePerspDraw.h"
 #include "Ex08PhongDraw.h"
+#include "Ex09InstancingDraw.h"
 
 #ifdef _WIN32
 extern "C" {
@@ -35,7 +36,8 @@ int main() {
 	//Ex05QuadTextureDraw Scene;
 	//Ex06QuadPerspDraw Scene;
 	//Ex07CubePerspDraw Scene;
-	Ex08PhongDraw Scene;
+	//Ex08PhongDraw Scene;
+	Ex09InstancingDraw Scene;
 	Scene.Start();
 
 	while(Win.IsOpened()) 
