@@ -102,6 +102,7 @@ void Ex08PhongDraw::Start()
 
     glm::vec3 PointLightPos = glm::vec3(4, 0, 0);
     Program->SetUniform("point_light_pos", PointLightPos);
+    Program->SetUniform("camera_pos", Position);
 }
 
 void Ex08PhongDraw::Update(float InDeltaTime)
@@ -120,6 +121,7 @@ void Ex08PhongDraw::Update(float InDeltaTime)
 
     glm::mat4 Mvp = Projection * View * Model;
     Program->SetUniform("mvp", Mvp);
+    Program->SetUniform("model", Model);
 
     glDrawArrays(GL_TRIANGLES, 0, VerticeCount);
 }
