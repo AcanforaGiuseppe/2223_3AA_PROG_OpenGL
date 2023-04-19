@@ -41,5 +41,22 @@ void main()
     phong += diffuse;
     phong += specular;
 
+    /*
+        attention = 1.f / contribute;
+            Kc = 1.f;
+            Kl => dependends on distance
+            Kq => dependends on distance
+
+        contribute = Kc + Kl * distance + Kq * distance * distance
+     */
+    
+    float k_c = 1.f;
+    float k_l = 0.35f;
+    float k_q = 0.44f;
+    float dist = length(point_light_pos - world_pos_out);
+
+    float attenuation = 1.f / ( k_c + k_l * dist + k_q * dist * dist );
+    phong *= attenuation;
+
     frag_color = vec4(phong, 1.f);
 }

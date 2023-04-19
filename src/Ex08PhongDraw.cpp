@@ -100,7 +100,7 @@ void Ex08PhongDraw::Start()
     Projection = glm::perspective(glm::radians(FovY), AspectRatio, ZNear, ZFar);
 
 
-    glm::vec3 PointLightPos = glm::vec3(4, 0, 0);
+    glm::vec3 PointLightPos = glm::vec3(1, 0, 0);
     Program->SetUniform("point_light_pos", PointLightPos);
     Program->SetUniform("camera_pos", Position);
 }
