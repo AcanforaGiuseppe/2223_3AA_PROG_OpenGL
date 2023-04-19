@@ -122,17 +122,20 @@ void Ex08PhongDraw::Update(float InDeltaTime)
     glm::mat4 Mvp = Projection * View * Model;
     Program->SetUniform("mvp", Mvp);
     Program->SetUniform("model", Model);
+    glViewport(0, 0, 600, 400);
     glDrawArrays(GL_TRIANGLES, 0, VerticeCount);
 
 
     glm::mat4 Model2 = glm::mat4(1.f);
-    Model2 = glm::translate(Model2, glm::vec3(2, -4, 0));
+    //Commented-out just to see the effect of glViewport call clear as possibile
+    //Model2 = glm::translate(Model2, glm::vec3(2, -4, 0));
     //Model2 = glm::rotate(Model2, glm::radians(Angle), glm::vec3(0, 1, 0));
     //Model2 = glm::scale(Model2, glm::vec3(2.f));
 
     glm::mat4 Mvp2 = Projection * View * Model2;
     Program->SetUniform("mvp", Mvp2);
     Program->SetUniform("model", Model2);
+    glViewport(400, 200, 350, 200);
     glDrawArrays(GL_TRIANGLES, 0, VerticeCount);
 }
 
