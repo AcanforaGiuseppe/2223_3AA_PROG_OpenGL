@@ -8,6 +8,8 @@
 struct QuadInstance 
 {
     glm::vec3 Position;
+    float Rotation;
+    glm::vec3 Scale;
 };
 
 class Ex09InstancingDraw 
@@ -26,7 +28,7 @@ private:
     OGLTexture* WoodText;
     glm::mat4 View;
     glm::mat4 Projection;
-    QuadInstance Quads[10];
+    std::vector<QuadInstance> Quads;
     GLuint VboMvp;
     std::vector<glm::mat4> MvpData;
 };

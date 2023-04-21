@@ -13,6 +13,7 @@ layout (location = 2) in mat4 inst_mvp;
 out vec2 vert_uv_out;
 //uniform mat4 mvp;
 //uniform mat4 mvp[8];
+out flat int inst_index;
 
 void main()
 {
@@ -21,4 +22,6 @@ void main()
 
     gl_Position = inst_mvp * vec4(vert_pos, 1.f);
     vert_uv_out = vert_uv;
+
+    inst_index = gl_InstanceID;
 }

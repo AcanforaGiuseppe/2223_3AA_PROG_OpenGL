@@ -64,6 +64,9 @@ void Ex09InstancingDraw::Start()
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LEQUAL); //default: GL_LESS
+
     //camera
     glm::vec3 Position = glm::vec3(0, 0, 8);
     glm::vec3 Direction = glm::vec3(0, 0, -1);
@@ -79,16 +82,18 @@ void Ex09InstancingDraw::Start()
     
     glm::vec3 BasePos{-5.f, 0, 0};
 
-    int quadCount = 8;
-    for(int Index = 0; Index < 8; Index++)
+    Quads.resize(10000);
+    for(int Index = 0; Index < Quads.size(); Index++)
     {
         Quads[Index].Position = BasePos;
+        Quads[Index].Rotation = Index * 10.f;
+        Quads[Index].Scale = glm::vec3(1.f + Index * 0.5f);
         BasePos += glm::vec3(1.5, 0.f, 0.f);
     }
 
     glGenBuffers(1, &VboMvp);
     glBindBuffer(GL_ARRAY_BUFFER, VboMvp);
-    glBufferData(GL_ARRAY_BUFFER, quadCount * sizeof(glm::mat4), NULL, GL_STREAM_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, Quads.size() * sizeof(glm::mat4), NULL, GL_STREAM_DRAW);
 
     GLuint Location_Mvp = 2;
     glVertexAttribPointer(Location_Mvp, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)0);
@@ -110,12 +115,12 @@ void Ex09InstancingDraw::Start()
     glEnableVertexAttribArray(Location_Mvp);
     glVertexAttribDivisor(Location_Mvp, 1);
 
-    MvpData.resize(quadCount);
+    MvpData.resize(Quads.size());
 }
 
 void Ex09InstancingDraw::Update(float InDeltaTime)
 {
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     /* Example with 1 drawcall for each instance
     for(int Index = 0; Index < 8; Index++)
@@ -134,13 +139,17 @@ void Ex09InstancingDraw::Update(float InDeltaTime)
     //glm::mat4 Mvp = Projection * View * glm::mat4(1.f);
     //Program->SetUniform("mvp", Mvp);
 
-    //static float ElapsedTime = 0;
-    //ElapsedTime += InDeltaTime;  
+    static float ElapsedTime = 0;
+    ElapsedTime += InDeltaTime;  
+
+    float BaseAngle = ElapsedTime * 20.f;
 
     for(int Index = 0; Index < MvpData.size(); Index++)
     {
         glm::mat4 Model = glm::mat4(1.f);
         Model = glm::translate(Model, Quads[Index].Position);
+        Model = glm::rotate(Model, glm::radians(BaseAngle + Quads[Index].Rotation), glm::vec3(0, 0, 1));
+        Model = glm::scale(Model, Quads[Index].Scale);
 
         glm::mat4 Mvp = Projection * View * Model;
 
