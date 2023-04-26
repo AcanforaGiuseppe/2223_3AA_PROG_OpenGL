@@ -9,47 +9,51 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+enum MeshVertexDataFilter{
+    POSITION = 1 << 0,
+    UV = 1 << 1,
+    NORMAL = 1 << 2,
+    ALL = POSITION | UV | NORMAL
+};
+
+void ReadMeshVertexData(const std::string &InObjPath, MeshVertexDataFilter InFilter, std::vector<float> &OutVertices, int &OutVerticeCount){
+    obj_t* mesh = obj_parser_parse(InObjPath.c_str());
+
+    for(int i=0; i < mesh->face_count; ++i) 
+    {
+        obj_triangle_t* t = &(mesh->triangles[i]);
+        
+        for (int j = 0; j < 3; j++)
+        {
+            obj_vertex_t* v = (obj_vertex_t*)((size_t)t + sizeof(obj_vertex_t) * j);
+            if(InFilter & MeshVertexDataFilter::POSITION){
+                OutVertices.push_back(v->position.x);
+                OutVertices.push_back(v->position.y);
+                OutVertices.push_back(v->position.z);
+            }
+            if(InFilter & MeshVertexDataFilter::UV){
+                OutVertices.push_back(v->uv.x);
+                OutVertices.push_back(v->uv.y);
+            }
+            if(InFilter & MeshVertexDataFilter::NORMAL){
+                OutVertices.push_back(v->normal.x);
+                OutVertices.push_back(v->normal.y);
+                OutVertices.push_back(v->normal.z);
+            }
+        }
+    }
+    OutVerticeCount = mesh->face_count * 3;
+    obj_parser_free(mesh);
+}
+
+
 void Ex10Exercise::Start()
 {
     //Storm Trupper scenario
     Program = new OGLProgram("resources/shaders/exercise.vert", "resources/shaders/exercise.frag");
-
-    obj_t* mesh = obj_parser_parse("resources/models/stormtrooper.obj");
-
-    std::vector<float> Vertices;
-    for(int i=0; i < mesh->face_count; ++i) 
-    {
-        obj_triangle_t& t = mesh->triangles[i];
-        
-        Vertices.push_back(t.v1.position.x);
-        Vertices.push_back(t.v1.position.y);
-        Vertices.push_back(t.v1.position.z);
-        Vertices.push_back(t.v1.uv.x);
-        Vertices.push_back(t.v1.uv.y);
-        Vertices.push_back(t.v1.normal.x);
-        Vertices.push_back(t.v1.normal.y);
-        Vertices.push_back(t.v1.normal.z);
-
-        Vertices.push_back(t.v2.position.x);
-        Vertices.push_back(t.v2.position.y);
-        Vertices.push_back(t.v2.position.z);
-        Vertices.push_back(t.v2.uv.x);
-        Vertices.push_back(t.v2.uv.y);
-        Vertices.push_back(t.v2.normal.x);
-        Vertices.push_back(t.v2.normal.y);
-        Vertices.push_back(t.v2.normal.z);
-
-        Vertices.push_back(t.v3.position.x);
-        Vertices.push_back(t.v3.position.y);
-        Vertices.push_back(t.v3.position.z);
-        Vertices.push_back(t.v3.uv.x);
-        Vertices.push_back(t.v3.uv.y);
-        Vertices.push_back(t.v3.normal.x);
-        Vertices.push_back(t.v3.normal.y);
-        Vertices.push_back(t.v3.normal.z);
-    }
     
-    VerticeCount = Vertices.size() / 8;
+    std::vector<float> Vertices;
+    ReadMeshVertexData("resources/models/stormtrooper.obj", MeshVertexDataFilter::ALL, Vertices, VerticeCount);
 
     //1. Create VAO
     glGenVertexArrays(1, &Vao);
@@ -177,8 +181,27 @@ void Ex10Exercise::Start()
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-    CubeProgram->Bind();
-    CubeProgram->SetUniform("color", Color{1,1,1,1});
+    //CubeProgram->Bind();
+    //CubeProgram->SetUniform("color", Color{1,1,1,1});
+
+    //Suzanne Scenario
+    std::vector<float> SuzanneVertices;
+    ReadMeshVertexData("resources/models/suzanne.obj", MeshVertexDataFilter::POSITION, SuzanneVertices, SuzanneVerticeCount);
+    //1. Create VAO
+    glGenVertexArrays(1, &SuzanneVao);
+    glBindVertexArray(SuzanneVao);
+    
+    //2. Create VBO to load data
+    glGenBuffers(1, &SuzanneVbo);
+    glBindBuffer(GL_ARRAY_BUFFER, SuzanneVbo);
+
+    int SuzanneDataSize = SuzanneVertices.size() * sizeof(float);
+    glBufferData(GL_ARRAY_BUFFER, SuzanneDataSize, SuzanneVertices.data(), GL_STATIC_DRAW);
+
+    //3. Link to Vertex Shader
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
 }
 
 void Ex10Exercise::Update(float InDeltaTime)
@@ -206,23 +229,50 @@ void Ex10Exercise::Update(float InDeltaTime)
     Program->SetUniform("model", Model);
     glDrawArrays(GL_TRIANGLES, 0, VerticeCount);
 
+    {
+        CubeProgram->Bind();
+        glBindVertexArray(CubeVao);
+    
+        glm::mat4 CubeModel = glm::mat4(1.f);
+        CubeModel = glm::translate(CubeModel, PointLightPos + StormTrupperPos + glm::vec3(0,4,0)); //vec3(1, 0, 0) + vec3(3, -4, 0) + pivot cancelling
+        CubeModel = glm::scale(CubeModel, glm::vec3(0.2f));
 
-    CubeProgram->Bind();
-    glBindVertexArray(CubeVao);
- 
-    glm::mat4 CubeModel = glm::mat4(1.f);
-    CubeModel = glm::translate(CubeModel, PointLightPos + StormTrupperPos + glm::vec3(0,4,0)); //vec3(1, 0, 0) + vec3(3, -4, 0) + pivot cancelling
-    CubeModel = glm::scale(CubeModel, glm::vec3(0.2f));
-
-    glm::mat4 T1 = glm::translate(glm::mat4(1.f), StormTrupperPos);
-    glm::mat4 Rotation = glm::rotate(glm::mat4(1.f), glm::radians(Angle), glm::vec3(0, 1, 0));
-    glm::mat4 T2 = glm::translate(glm::mat4(1.f), -StormTrupperPos);
-    glm::mat4 RotationAround = T1 * Rotation * T2;
+        glm::mat4 T1 = glm::translate(glm::mat4(1.f), StormTrupperPos);
+        glm::mat4 Rotation = glm::rotate(glm::mat4(1.f), glm::radians(Angle), glm::vec3(0, 1, 0));
+        glm::mat4 T2 = glm::translate(glm::mat4(1.f), -StormTrupperPos);
+        glm::mat4 RotationAround = T1 * Rotation * T2;
 
 
-    glm::mat4 CubeMvp = Projection * View * RotationAround * CubeModel;
-    CubeProgram->SetUniform("mvp", CubeMvp);
-    glDrawArrays(GL_TRIANGLES, 0, CubeVerticeCount);
+        glm::mat4 CubeMvp = Projection * View * RotationAround * CubeModel;
+        CubeProgram->SetUniform("mvp", CubeMvp);
+        CubeProgram->SetUniform("color", Color{1,1,1,1});
+        glDrawArrays(GL_TRIANGLES, 0, CubeVerticeCount);
+    }
+
+    {
+        glBindVertexArray(SuzanneVao);
+        int nSuzanne = 5;
+        float deltaAngle = 360 / nSuzanne;
+        for (int i = 0; i < nSuzanne; i++)
+        {
+            float offsetAngle = deltaAngle * i;
+            float x = cos(glm::radians(offsetAngle));
+            float z = sin(glm::radians(offsetAngle));
+            glm::vec3 dir = glm::vec3(x,0,z);
+            glm::mat4 SuzanneModel = glm::mat4(1.f);
+            SuzanneModel = glm::translate(SuzanneModel, StormTrupperPos + dir * glm::vec3(2) + glm::vec3(0,7,0));
+
+            glm::mat4 lookAtResult = glm::lookAt(glm::vec3(0), dir, glm::vec3(0,1,0));
+            SuzanneModel = glm::rotate(SuzanneModel, glm::radians(180.f), glm::vec3(0,1,0));
+            SuzanneModel *= glm::inverse(lookAtResult);
+            SuzanneModel = glm::scale(SuzanneModel, glm::vec3(0.5f));
+            glm::mat4 SuzanneMvp = Projection * View * SuzanneModel;
+            CubeProgram->SetUniform("mvp", SuzanneMvp);
+            CubeProgram->SetUniform("color", Color{1,1,0.5,1});
+            glDrawArrays(GL_TRIANGLES, 0, SuzanneVerticeCount);
+        }
+        
+    }
 
 }
 
