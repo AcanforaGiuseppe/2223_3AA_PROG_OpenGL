@@ -104,7 +104,7 @@ void Ex10Exercise::Start()
 
     PointLightPos = glm::vec3(1, 0, 0);
     Program->Bind();
-    Program->SetUniform("point_light_pos", PointLightPos);
+    //Program->SetUniform("point_light_pos", PointLightPos);
     Program->SetUniform("camera_pos", Position);
     StormText = new OGLTexture("resources/models/stormtrooper.png");
     StormText->Bind(GL_TEXTURE0);
@@ -206,7 +206,10 @@ void Ex10Exercise::Start()
 
 void Ex10Exercise::Update(float InDeltaTime)
 {
-    glm::vec3 StormTrupperPos = glm::vec3(3, -4, 0);
+    //glm::vec3 StormTrupperPos = glm::vec3(3, -4, 0);
+    glm::vec3 StormTrupperPos = glm::vec3(0, -4, 0);
+
+    static glm::vec3 PhongLightPos = PointLightPos;
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -214,25 +217,26 @@ void Ex10Exercise::Update(float InDeltaTime)
     ElapsedTime += InDeltaTime;
     float Angle = 20.f * ElapsedTime;
 
-    Program->Bind();
-    glBindVertexArray(Vao);
+    {  
+        //Rendering Stoormtrup
+        
+        //Model =  translate * rotate * scale;
+        glm::mat4 Model = glm::mat4(1.f);
+        Model = glm::translate(Model, StormTrupperPos);
+        //Model = glm::rotate(Model, glm::radians(Angle), glm::vec3(0, 1, 0));
+        Model = glm::scale(Model, glm::vec3(2.f));
 
-    //Model =  translate * rotate * scale;
-    glm::mat4 Model = glm::mat4(1.f);
-    Model = glm::translate(Model, StormTrupperPos);
-    Model = glm::rotate(Model, glm::radians(Angle), glm::vec3(0, 1, 0));
-    Model = glm::scale(Model, glm::vec3(2.f));
-
-
-    glm::mat4 Mvp = Projection * View * Model;
-    Program->SetUniform("mvp", Mvp);
-    Program->SetUniform("model", Model);
-    glDrawArrays(GL_TRIANGLES, 0, VerticeCount);
-
+        glm::mat4 Mvp = Projection * View * Model;
+        glBindVertexArray(Vao);
+        Program->Bind();
+        Program->SetUniform("mvp", Mvp);
+        Program->SetUniform("model", Model);
+        Program->SetUniform("point_light_pos", PhongLightPos);
+        glDrawArrays(GL_TRIANGLES, 0, VerticeCount);
+    }
     {
-        CubeProgram->Bind();
-        glBindVertexArray(CubeVao);
-    
+
+        //Rendering Light as a Cube   
         glm::mat4 CubeModel = glm::mat4(1.f);
         CubeModel = glm::translate(CubeModel, PointLightPos + StormTrupperPos + glm::vec3(0,4,0)); //vec3(1, 0, 0) + vec3(3, -4, 0) + pivot cancelling
         CubeModel = glm::scale(CubeModel, glm::vec3(0.2f));
@@ -244,15 +248,38 @@ void Ex10Exercise::Update(float InDeltaTime)
 
 
         glm::mat4 CubeMvp = Projection * View * RotationAround * CubeModel;
+
+        glBindVertexArray(CubeVao);
+        CubeProgram->Bind();
         CubeProgram->SetUniform("mvp", CubeMvp);
         CubeProgram->SetUniform("color", Color{1,1,1,1});
         glDrawArrays(GL_TRIANGLES, 0, CubeVerticeCount);
+
+        //Update Light position for phong
+        glm::mat4 LightWorldMat = RotationAround * CubeModel;
+
+        //Opengl: Matrix data starage: Column Major
+        /*
+        // [ Colum0, Column1, Column2, Column3 ]
+        float Tx = LightWorldMat[3][0];
+        float Ty = LightWorldMat[3][1];
+        float Tz = LightWorldMat[3][2];
+        */
+
+        PhongLightPos = LightWorldMat * glm::vec4(0, 0, 0, 1.f);
+        //  In case of Matrix in Row Major, all matrix operation need to be done in reverse order:
+        //  Example: //auto PhongLightPos = glm::vec4(0, 0, 0, 1.f) * LightWorldMat;
+
+        //PhongLightPos = glm::vec3(Tx, Ty, Tz);
     }
 
     {
-        glBindVertexArray(SuzanneVao);
+        // Render Suzanne as a crown around Stoormtrup head
+        CubeProgram->Bind(); //No needed because alreday bound from Light Cube render
+        glBindVertexArray(SuzanneVao); //Once for all suzanne(s)
+
         int nSuzanne = 5;
-        float deltaAngle = 360 / nSuzanne;
+        float deltaAngle = 360.f / (float)nSuzanne;
         for (int i = 0; i < nSuzanne; i++)
         {
             float offsetAngle = deltaAngle * i;
@@ -261,17 +288,23 @@ void Ex10Exercise::Update(float InDeltaTime)
             glm::vec3 dir = glm::vec3(x,0,z);
             glm::mat4 SuzanneModel = glm::mat4(1.f);
             SuzanneModel = glm::translate(SuzanneModel, StormTrupperPos + dir * glm::vec3(2) + glm::vec3(0,7,0));
-
+            
+            SuzanneModel = glm::rotate(SuzanneModel, glm::radians(180.f), glm::vec3(0,1,0)); //Only if to take account for suzanne that look in the opposite direction of the screen
             glm::mat4 lookAtResult = glm::lookAt(glm::vec3(0), dir, glm::vec3(0,1,0));
-            SuzanneModel = glm::rotate(SuzanneModel, glm::radians(180.f), glm::vec3(0,1,0));
             SuzanneModel *= glm::inverse(lookAtResult);
             SuzanneModel = glm::scale(SuzanneModel, glm::vec3(0.5f));
-            glm::mat4 SuzanneMvp = Projection * View * SuzanneModel;
+
+            glm::mat4 T1 = glm::translate(glm::mat4(1.f), StormTrupperPos);
+            glm::mat4 Rotation = glm::rotate(glm::mat4(1.f), glm::radians(Angle), glm::vec3(0, 1, 0));
+            glm::mat4 T2 = glm::translate(glm::mat4(1.f), -StormTrupperPos);
+            glm::mat4 RotationAround = T1 * Rotation * T2;
+
+            glm::mat4 SuzanneMvp = Projection * View * RotationAround * SuzanneModel;
+             
             CubeProgram->SetUniform("mvp", SuzanneMvp);
             CubeProgram->SetUniform("color", Color{1,1,0.5,1});
             glDrawArrays(GL_TRIANGLES, 0, SuzanneVerticeCount);
         }
-        
     }
 
 }
