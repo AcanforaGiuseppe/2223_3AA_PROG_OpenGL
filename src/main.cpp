@@ -13,6 +13,7 @@
 #include "Ex08PhongDraw.h"
 #include "Ex09InstancingDraw.h"
 #include "Ex10Exercise.h"
+#include "Ex11PostFX.h"
 
 #ifdef _WIN32
 extern "C" {
@@ -39,7 +40,8 @@ int main() {
 	//Ex07CubePerspDraw Scene;
 	//Ex08PhongDraw Scene;
 	//Ex09InstancingDraw Scene;
-	Ex10Exercise Scene;
+	//Ex10Exercise Scene;
+	Ex11PostFX Scene;
 	Scene.Start();
 
 	while(Win.IsOpened()) 
