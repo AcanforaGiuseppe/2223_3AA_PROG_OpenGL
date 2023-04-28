@@ -16,12 +16,15 @@ private:
     OGLProgram* CubeProgram;
     GLuint Vao;
     GLuint CubeVao;
+    GLuint SuzanneVao;
     GLuint Vbo;
     GLuint CubeVbo;
+    GLuint SuzanneVbo;
     OGLTexture* StormText;
     glm::vec3 PointLightPos;
     glm::mat4 View;
     glm::mat4 Projection;
     int VerticeCount;
     int CubeVerticeCount;
+    int SuzanneVerticeCount;
 };
