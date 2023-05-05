@@ -42,8 +42,8 @@ int main() {
 	//Ex08PhongDraw Scene;
 	//Ex09InstancingDraw Scene;
 	//Ex10Exercise Scene;
-	//Ex11PostFX Scene;
-	Ex12DeferredDraw Scene;
+	Ex11PostFX Scene{Win};
+	//Ex12DeferredDraw Scene;
 	Scene.Start();
 
 	while(Win.IsOpened()) 

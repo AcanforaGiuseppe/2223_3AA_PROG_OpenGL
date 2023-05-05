@@ -2,10 +2,12 @@
 #include <glad/glad.h>
 #include "OGLProgram.h"
 #include "OGLTexture.h"
+#include "OGLWindow.h"
 
 class Ex11PostFX 
 {
 public:
+    Ex11PostFX(const OGLWindow& InWin) : Win(InWin) { }
     void Start();
     void Update(float InDeltaTime);
     void Destroy();
@@ -23,4 +25,7 @@ private:
     GLuint QuadVao;
     GLuint QuadVbo;
     OGLProgram* QuadProgram;
+
+    const OGLWindow& Win;
+    OGLTexture* MaskText;
 };

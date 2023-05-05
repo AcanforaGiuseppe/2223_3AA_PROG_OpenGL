@@ -68,3 +68,9 @@ void OGLWindow::SetTitle(const std::string& InTitle)  {
     Title = InTitle;
     glfwSetWindowTitle(RawWindow, Title.c_str());
 }
+
+glm::vec2 OGLWindow::MousePosition() const {
+    double posX, posY;
+    glfwGetCursorPos(RawWindow, &posX, &posY);
+    return glm::vec2((float)posX, (float)posY);
+}

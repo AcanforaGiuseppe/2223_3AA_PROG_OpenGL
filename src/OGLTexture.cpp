@@ -50,3 +50,9 @@ void OGLTexture::Bind(GLenum TextureUnit)
     glActiveTexture(TextureUnit);
     glBindTexture(GL_TEXTURE_2D, Id);
 }
+
+void OGLTexture::SetWrappingClampToEdge() 
+{
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+}

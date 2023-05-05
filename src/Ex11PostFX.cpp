@@ -157,6 +157,10 @@ void Ex11PostFX::Start()
 
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
     glEnableVertexAttribArray(1);
+
+    //MASK EFFECT
+    MaskText = new OGLTexture("resources/textures/mask_circle.png");
+    MaskText->SetWrappingClampToEdge();
 }
 
 void Ex11PostFX::Update(float InDeltaTime)
@@ -185,7 +189,10 @@ void Ex11PostFX::Update(float InDeltaTime)
     glBindVertexArray(QuadVao);
     QuadProgram->Bind();
     QuadProgram->SetUniform("time", ElapsedTime);
-    //glTextureBin
+    QuadProgram->SetUniform("mouse", Win.MousePosition());
+
+    MaskText->Bind(GL_TEXTURE1);
+
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, SceneTexture);
     glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -205,4 +212,6 @@ void Ex11PostFX::Destroy()
     glDeleteVertexArrays(1, &QuadVao);
     glDeleteBuffers(1, &QuadVbo);
     delete QuadProgram;
+
+    delete MaskText;
 }

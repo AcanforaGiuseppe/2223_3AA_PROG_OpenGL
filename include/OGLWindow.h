@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <glm/glm.hpp>
 
 typedef struct GLFWwindow GLFWwindow;
 
@@ -14,6 +15,7 @@ public:
     float GetDeltaTime();
     void Update();
     void SetTitle(const std::string& InTitle);
+    glm::vec2 MousePosition() const;
 
 private:
     int Width;

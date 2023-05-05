@@ -4,8 +4,10 @@ out vec4 frag_color;
 in vec2 uv_out;
 
 layout (binding = 0) uniform sampler2D scene_tex;
+layout (binding = 1) uniform sampler2D mask_tex;
 
 uniform float time;
+uniform vec2 mouse;
 
 //TODO: Pass Screen Width and Heigh as uniform
 vec4 blur() {
@@ -50,6 +52,75 @@ vec4 quake() {
     uv_new.y += cos(time * 45) * strength;
 
     return texture(scene_tex, uv_new);
+}
+
+vec2 mouse_to_uv() {
+    vec2 muv;
+    muv.x = mouse.x / 600.f;
+    muv.y = 1.f - (mouse.y / 400.f);
+    return muv;
+}
+
+vec4 mask_v1() {
+    //vec2 center = vec2(0.5);  //TODO: Mouse Position
+    vec2 center = mouse_to_uv();
+    //if (center.x < 0 || center.y < 0) return vec4(0);
+
+    float max_ray_length = 0.1f;
+    float aspect_ratio = 600.f / 400.f;
+
+    vec2 diff = uv_out - center;
+    diff.x *= aspect_ratio;
+    float dist = length(diff);
+
+
+    if (dist < max_ray_length) {
+        return texture(scene_tex, uv_out);
+    } else {
+        return vec4(0);
+    }
+}
+
+
+vec4 mask_v2() {
+    vec2 center = mouse_to_uv();
+
+    float max_ray_length = 0.2f;
+    float aspect_ratio = 600.f / 400.f;
+
+    vec2 diff = uv_out - center;
+    diff.x *= aspect_ratio;
+    float dist = length(diff);
+
+    float maskValue = dist / max_ray_length;
+    //mask_value = 1;
+    vec2 mask_dir = normalize(diff) * maskValue; // [-1, 1]
+    vec2 mask_uv = (mask_dir + vec2(1.f)) * vec2(0.5f); // [0, 1] 
+    //vec2 mask_uv += vec2(0.5f);    // [0, 1]
+
+    vec4 base = texture(scene_tex, uv_out);
+    vec4 mask = texture(mask_tex, mask_uv);
+    return base * mask;
+}
+
+vec4 mask_v3() {
+    vec2 center = mouse_to_uv();
+
+    float max_ray_length = 0.2f;
+    float aspect_ratio = 600.f / 400.f;
+
+    vec2 diff = uv_out - center;
+    diff.x *= aspect_ratio;
+    float dist = length(diff);
+
+    float maskValue = dist / max_ray_length;
+    //mask_value = 1;
+    vec2 mask_dir = normalize(diff) * maskValue; // [-1, 1]
+    vec2 mask_uv = (mask_dir + vec2(1.f)) * vec2(0.5f); // [0, 1] 
+    //vec2 mask_uv += vec2(0.5f);    // [0, 1]
+
+    vec4 mask = texture(mask_tex, mask_uv);
+    return mask;
 }
 
 void main() 
@@ -98,7 +169,13 @@ void main()
     frag_color = wave();
     */
     
-    /* QUAKE */
+    /* QUAKE 
     frag_color = quake();
+    */
 
+    //frag_color = mask_v1();
+    frag_color = mask_v2();
+
+    //Example chainging postfx
+    //frag_color = quake() * mask_v3();
 }

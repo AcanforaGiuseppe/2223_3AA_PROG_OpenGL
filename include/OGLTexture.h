@@ -9,6 +9,8 @@ class OGLTexture
         OGLTexture(const std::string& Path);
         ~OGLTexture();
         void Bind(GLenum TextureUnit);
+
+        void SetWrappingClampToEdge();
     private:
        GLuint Id; 
 };

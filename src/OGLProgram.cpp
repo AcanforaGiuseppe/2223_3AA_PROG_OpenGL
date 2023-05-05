@@ -118,3 +118,8 @@ void OGLProgram::SetUniform(const std::string& name, glm::vec3 vect)
 {
     glUniform3fv(glGetUniformLocation(ID(), name.c_str()), 1, &vect[0]);
 }
+
+void OGLProgram::SetUniform(const std::string& name, glm::vec2 vect) 
+{
+    glUniform2fv(glGetUniformLocation(ID(), name.c_str()), 1, &vect[0]);
+}

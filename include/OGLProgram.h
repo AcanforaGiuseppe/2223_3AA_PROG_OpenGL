@@ -14,6 +14,7 @@ public:
     void SetUniform(const std::string& name, const Color& color);
     void SetUniform(const std::string& name, float value);
     void SetUniform(const std::string& name, glm::mat4 matrix);
+    void SetUniform(const std::string& name, glm::vec2 vect);
     void SetUniform(const std::string& name, glm::vec3 vect);
 private:
     GLuint ProgramId;
