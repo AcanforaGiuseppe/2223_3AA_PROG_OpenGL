@@ -85,14 +85,14 @@ vec4 mask_v1() {
 vec4 mask_v2() {
     vec2 center = mouse_to_uv();
 
-    float max_ray_length = 0.2f;
+    float max_radius_length = 0.2f;
     float aspect_ratio = 600.f / 400.f;
 
     vec2 diff = uv_out - center;
     diff.x *= aspect_ratio;
     float dist = length(diff);
 
-    float maskValue = dist / max_ray_length;
+    float maskValue = dist / max_radius_length;
     //mask_value = 1;
     vec2 mask_dir = normalize(diff) * maskValue; // [-1, 1]
     vec2 mask_uv = (mask_dir + vec2(1.f)) * vec2(0.5f); // [0, 1] 
@@ -106,19 +106,19 @@ vec4 mask_v2() {
 vec4 mask_v3() {
     vec2 center = mouse_to_uv();
 
-    float max_ray_length = 0.2f;
+    float max_radius_length = 0.2f;
     float aspect_ratio = 600.f / 400.f;
 
     vec2 diff = uv_out - center;
     diff.x *= aspect_ratio;
     float dist = length(diff);
 
-    float maskValue = dist / max_ray_length;
+    float maskValue =  dist / max_radius_length;
     //mask_value = 1;
     vec2 mask_dir = normalize(diff) * maskValue; // [-1, 1]
-    vec2 mask_uv = (mask_dir + vec2(1.f)) * vec2(0.5f); // [0, 1] 
-    //vec2 mask_uv += vec2(0.5f);    // [0, 1]
-
+    //vec2 mask_uv = (mask_dir + vec2(1.f)) * vec2(0.5f); // [0, 1] 
+    //Range conversion could be avoided in this case, and just offsetting by 0.5 will do the job
+    vec2 mask_uv = mask_dir + vec2(0.5f);    
     vec4 mask = texture(mask_tex, mask_uv);
     return mask;
 }
