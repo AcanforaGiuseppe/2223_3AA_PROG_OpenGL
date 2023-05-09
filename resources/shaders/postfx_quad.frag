@@ -10,16 +10,18 @@ uniform float time;
 uniform vec2 mouse;
 
 //TODO: Pass Screen Width and Heigh as uniform
-vec4 blur() {
-
+vec4 blur()
+{
     vec2 textSize = textureSize(scene_tex, 0);
     float uv_w = 1.f / textSize.x;
     float uv_h = 1.f / textSize.y;
 
     vec4 contrib = vec4(0.f);
+
     for(float i=-1.f; i <= 1.f; ++i) 
     {
         float xoff = uv_w * i;
+
         for(float j=-1.f; j <= 1.f; ++j) 
         {
             float yoff = uv_h * j;
@@ -33,7 +35,8 @@ vec4 blur() {
     return color;
 }
 
-vec4 wave() {
+vec4 wave()
+{
     //y = A sin(B(x + C)) + D
     float A = 1.f / 80.f;
     float B = 20.f;
@@ -44,7 +47,8 @@ vec4 wave() {
     return texture(scene_tex, uv_curr);
 }
 
-vec4 quake() {
+vec4 quake()
+{
     vec2 uv_new = uv_out;
     float strength = 0.01f;
 
@@ -54,14 +58,16 @@ vec4 quake() {
     return texture(scene_tex, uv_new);
 }
 
-vec2 mouse_to_uv() {
+vec2 mouse_to_uv()
+{
     vec2 muv;
     muv.x = mouse.x / 600.f;
     muv.y = 1.f - (mouse.y / 400.f);
     return muv;
 }
 
-vec4 mask_v1() {
+vec4 mask_v1()
+{
     //vec2 center = vec2(0.5);  //TODO: Mouse Position
     vec2 center = mouse_to_uv();
     //if (center.x < 0 || center.y < 0) return vec4(0);
@@ -74,15 +80,15 @@ vec4 mask_v1() {
     float dist = length(diff);
 
 
-    if (dist < max_ray_length) {
+    if (dist < max_ray_length)
         return texture(scene_tex, uv_out);
-    } else {
+    else
         return vec4(0);
-    }
 }
 
 
-vec4 mask_v2() {
+vec4 mask_v2()
+{
     vec2 center = mouse_to_uv();
 
     float max_radius_length = 0.2f;
@@ -100,10 +106,12 @@ vec4 mask_v2() {
 
     vec4 base = texture(scene_tex, uv_out);
     vec4 mask = texture(mask_tex, mask_uv);
+
     return base * mask;
 }
 
-vec4 mask_v3() {
+vec4 mask_v3()
+{
     vec2 center = mouse_to_uv();
 
     float max_radius_length = 0.2f;
@@ -120,6 +128,7 @@ vec4 mask_v3() {
     //Range conversion could be avoided in this case, and just offsetting by 0.5 will do the job
     vec2 mask_uv = mask_dir + vec2(0.5f);    
     vec4 mask = texture(mask_tex, mask_uv);
+
     return mask;
 }
 
@@ -146,19 +155,17 @@ void main()
     */
 
     /* BLACKBAND with gl_FragCoord
-    if (gl_FragCoord.y < 30 || gl_FragCoord.y > 370) {
+    if (gl_FragCoord.y < 30 || gl_FragCoord.y > 370)
         frag_color = vec4(0);
-    } else {
+    else
         frag_color = texture(scene_tex, uv_out);
-    }
     */
 
     /* BLACKBAND with uv  
-    if (uv_out.y < 0.1 || uv_out.y > 0.9) {
+    if (uv_out.y < 0.1 || uv_out.y > 0.9)
         frag_color = vec4(0);
-    } else {
+    else
         frag_color = texture(scene_tex, uv_out);
-    }
     */
 
     /* BLUR 

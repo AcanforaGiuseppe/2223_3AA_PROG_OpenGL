@@ -15,6 +15,7 @@ void Ex12DeferredDraw::Start()
     obj_t* mesh = obj_parser_parse("resources/models/stormtrooper.obj");
 
     std::vector<float> Vertices;
+
     for(int i=0; i < mesh->face_count; ++i) 
     {
         obj_triangle_t& t = mesh->triangles[i];
@@ -49,18 +50,18 @@ void Ex12DeferredDraw::Start()
     
     VerticeCount = Vertices.size() / 8;
 
-    //1. Create VAO
+    // 1. Create VAO
     glGenVertexArrays(1, &Vao);
     glBindVertexArray(Vao);
 
-    //2. Create VBO to load data
+    // 2. Create VBO to load data
     glGenBuffers(1, &Vbo);
     glBindBuffer(GL_ARRAY_BUFFER, Vbo);
 
     int DataSize = Vertices.size() * sizeof(float);
     glBufferData(GL_ARRAY_BUFFER, DataSize, Vertices.data(), GL_STATIC_DRAW);
 
-    //3. Link to Vertex Shader
+    // 3. Link to Vertex Shader
     GLuint Location_0 = 0;
     glVertexAttribPointer(Location_0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(Location_0);
@@ -73,20 +74,19 @@ void Ex12DeferredDraw::Start()
     glVertexAttribPointer(Location_2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(5 * sizeof(float)));
     glEnableVertexAttribArray(Location_2);
 
-    //4. Set Viewport
+    // 4. Set Viewport
     glViewport(0, 0, 600, 400);
     //glClearColor(0.5f, 0.5f, 0.5f, 1.f);
     //Program->Bind();
 
     StormText = new OGLTexture("resources/models/stormtrooper.png");
-    
 
     //glEnable(GL_DEPTH_TEST);
     //glEnable(GL_CULL_FACE);
     //glFrontFace(GL_CCW); //default
     //glCullFace(GL_BACK); //default
 
-    //camera
+    // Camera
     glm::vec3 Position = glm::vec3(0, 0, 8);
     glm::vec3 Direction = glm::vec3(0, 0, -1);
     glm::vec3 Up = glm::vec3(0, 1, 0);
@@ -98,17 +98,16 @@ void Ex12DeferredDraw::Start()
     View = glm::lookAt(Position, Position + Direction, Up);
     Projection = glm::perspective(glm::radians(FovY), AspectRatio, ZNear, ZFar);
 
-
     //glm::vec3 PointLightPos = glm::vec3(1, 0, 0);
     //Program->SetUniform("point_light_pos", PointLightPos);
     //Program->SetUniform("camera_pos", Position);
 
     /* SETUP G-BUFFER (MRT - Multi Render Target) (G-Buffer alias Geometry Buffer) */
-    //1. Create FBO
+    // 1. Create FBO
     glGenFramebuffers(1, &GFbo);
     glBindFramebuffer(GL_FRAMEBUFFER, GFbo);
 
-    //2. Create Render Target (as color attach): Diffuse (x3 float => with 8bit precision)
+    // 2. Create Render Target (as color attach): Diffuse (x3 float => with 8bit precision)
     glGenTextures(1, &DiffuseText);
     glBindTexture(GL_TEXTURE_2D, DiffuseText);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 600, 400, 0, GL_RGB, GL_FLOAT, NULL);
@@ -116,7 +115,7 @@ void Ex12DeferredDraw::Start()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, DiffuseText, 0);
 
-    //3. Create Render Target (as color attach): Normals (x3 float => with 16bit precision )
+    // 3. Create Render Target (as color attach): Normals (x3 float => with 16bit precision )
     glGenTextures(1, &NormalText);
     glBindTexture(GL_TEXTURE_2D, NormalText);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, 600, 400, 0, GL_RGB, GL_FLOAT, NULL); //TODO: Try with GL_RGB16F 
@@ -124,7 +123,7 @@ void Ex12DeferredDraw::Start()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, NormalText, 0);
 
-    //4. Create Render Target (as color attach): Positions (x3 float => with 16bit precision )
+    // 4. Create Render Target (as color attach): Positions (x3 float => with 16bit precision )
     glGenTextures(1, &PositionText);
     glBindTexture(GL_TEXTURE_2D, PositionText);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, 600, 400, 0, GL_RGB, GL_FLOAT, NULL); //TODO: Try with GL_RGB16F 
@@ -132,18 +131,19 @@ void Ex12DeferredDraw::Start()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, PositionText, 0);
 
-    //5. Make available the Render Targets
+    // 5. Make available the Render Targets
     GLenum Attachs[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2};
     glDrawBuffers(3, Attachs);
 
-    //6. Attach Depth RenderBuffer
+    // 6. Attach Depth RenderBuffer
     glGenRenderbuffers(1, &DepthRbo);
     glBindRenderbuffer(GL_RENDERBUFFER, DepthRbo);
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 600, 400);
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, DepthRbo);
     glBindRenderbuffer(GL_RENDERBUFFER, 0); 
 
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) DIE("FBO not complete!");
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        DIE("FBO not complete!");
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     /* SETUP Blending */
@@ -151,32 +151,31 @@ void Ex12DeferredDraw::Start()
 
     std::vector<float> QuadVertices = { //NDC to avoid trasformations in vert shader
         // Positions   // Uvs
-        -1.f, -1.f,  0.f, 0.f,  //bottom left
-         1.f, -1.f,  1.f, 0.f,  //bottom right
-        -1.f,  1.f,  0.f, 1.f,  //top left
+        -1.f, -1.f,  0.f, 0.f,  // bottom left
+         1.f, -1.f,  1.f, 0.f,  // bottom right
+        -1.f,  1.f,  0.f, 1.f,  // top left
 
-        -1.f,  1.f,  0.f, 1.f,  //top left
-         1.f, -1.f,  1.f, 0.f,  //bottom right
-         1.f,  1.f,  1.f, 1.f   //top right    
+        -1.f,  1.f,  0.f, 1.f,  // top left
+         1.f, -1.f,  1.f, 0.f,  // bottom right
+         1.f,  1.f,  1.f, 1.f   // top right    
     };
 
-    //1. Create VAO
+    // 1. Create VAO
     glGenVertexArrays(1, &QuadVao);
     glBindVertexArray(QuadVao);
 
-    //2. Create VBO to load data
+    // 2. Create VBO to load data
     glGenBuffers(1, &QuadVbo);
     glBindBuffer(GL_ARRAY_BUFFER, QuadVbo);
 
     glBufferData(GL_ARRAY_BUFFER, QuadVertices.size() * sizeof(float), QuadVertices.data(), GL_STATIC_DRAW);
 
-    //3. Link to Vertex Shader
+    // 3. Link to Vertex Shader
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
     glEnableVertexAttribArray(1);
-
 
     glm::vec3 PointLightPos0 = glm::vec3(1, 0, 0);
     glm::vec3 PointLightPos1 = glm::vec3(-2, 0, 0);
@@ -191,37 +190,38 @@ void Ex12DeferredDraw::Start()
      //QuadProgram->SetUniform("lights[0].pos", PointLightPos0);
 }
 
-static void DebugGBuffer(GLuint GBufferId) {
+static void DebugGBuffer(GLuint GBufferId)
+{
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glClearColor(1.f, 0.f, 0.f, 1.f);
     glClear(GL_COLOR_BUFFER_BIT);
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);
 
-
     glBindFramebuffer(GL_READ_FRAMEBUFFER, GBufferId);
     glReadBuffer(GL_COLOR_ATTACHMENT0);
     glBlitFramebuffer(
-        0, 0,   600, 400, //Source Bounds
-        0, 200, 300, 400, //Destin Bounds
-        GL_COLOR_BUFFER_BIT,  //Which buffer to write to
-        GL_LINEAR        //interpolation in case of streching image (LINEAR, NEAREST)
+        0, 0,   600, 400,     // Source Bounds
+        0, 200, 300, 400,     // Destin Bounds
+        GL_COLOR_BUFFER_BIT,  // Which buffer to write to
+        GL_LINEAR             // Interpolation in case of streching image (LINEAR, NEAREST)
     );
 
     glReadBuffer(GL_COLOR_ATTACHMENT1);
     glBlitFramebuffer(
-        0, 0,     600, 400, //Source Bounds
-        300, 200, 600, 400, //Destin Bounds
-        GL_COLOR_BUFFER_BIT,  //Which buffer to write to
-        GL_LINEAR        //interpolation in case of streching image (LINEAR, NEAREST)
+        0, 0,     600, 400,   // Source Bounds
+        300, 200, 600, 400,   // Destin Bounds
+        GL_COLOR_BUFFER_BIT,  // Which buffer to write to
+        GL_LINEAR             // Interpolation in case of streching image (LINEAR, NEAREST)
     );
 
     glReadBuffer(GL_COLOR_ATTACHMENT2);
+
     glBlitFramebuffer(
-        0, 0,     600, 400, //Source Bounds
-        0, 0,     300, 200, //Destin Bounds
-        GL_COLOR_BUFFER_BIT,  //Which buffer to write to
-        GL_LINEAR        //interpolation in case of streching image (LINEAR, NEAREST)
+        0, 0,     600, 400,     // Source Bounds
+        0, 0,     300, 200,     // Destin Bounds
+        GL_COLOR_BUFFER_BIT,    // Which buffer to write to
+        GL_LINEAR               // Interpolation in case of streching image (LINEAR, NEAREST)
     );
 }
 
@@ -252,7 +252,7 @@ void Ex12DeferredDraw::Update(float InDeltaTime)
     StormText->Bind(GL_TEXTURE0);
     glDrawArrays(GL_TRIANGLES, 0, VerticeCount);
 
-    //Debug
+    // Debug
     //DebugGBuffer(GFbo);
 
     // Blending Pass
@@ -277,7 +277,6 @@ void Ex12DeferredDraw::Update(float InDeltaTime)
     glBindTextureUnit(2, PositionText); //Alternative "compact" API 
 
     glDrawArrays(GL_TRIANGLES, 0, 6);
-
 }
 
 void Ex12DeferredDraw::Destroy()

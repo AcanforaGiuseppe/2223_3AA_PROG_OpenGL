@@ -32,4 +32,3 @@ add_custom_command(TARGET ${EXEC_PRJ} POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --cyan "Copy Resources..."
   COMMAND ${CMAKE_COMMAND} -E copy_directory ${ResourcesPath} $<TARGET_FILE_DIR:${EXEC_PRJ}>/resources
 )
-

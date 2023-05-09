@@ -34,6 +34,7 @@ vec3 rotate_on_y(vec3 pos, float degrees)
     vec3 result = pos;
     result.x = cos(rads) * pos.x - sin(rads) * pos.z;
     result.z = sin(rads) * pos.x + cos(rads) * pos.z;
+    
     return result;
 }
 

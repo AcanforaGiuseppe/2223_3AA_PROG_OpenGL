@@ -19,17 +19,17 @@ void main()
 
     vec3 mesh_color = storm_texel.xyz;
 
-    //Ambient
+    // Ambient
     float ambient_factor = 0.2f;
     vec3 ambient = mesh_color * ambient_factor;
 
-    //Diffuse
+    // Diffuse
     vec3 light_dir = normalize(point_light_pos - world_pos_out);
     vec3 world_norm = normalize(world_norm_out);
     float lambert = max(dot(world_norm, light_dir), 0.f);
     vec3 diffuse = mesh_color * lambert;
 
-    //Specular
+    // Specular
     vec3 eye_dir = normalize(camera_pos - world_pos_out);
     vec3 refl_dir = reflect(-light_dir, world_norm);
     float spec_str = max(dot(eye_dir, refl_dir), 0.f);

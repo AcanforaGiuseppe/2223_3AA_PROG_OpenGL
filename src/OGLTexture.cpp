@@ -1,6 +1,5 @@
 #include "OGLTexture.h"
 #include "Common.h"
-
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
@@ -18,14 +17,17 @@ static GLuint CreateTexture(const std::string& InImagePath)
     glGenTextures(1, &TextureId);
     glBindTexture(GL_TEXTURE_2D, TextureId);
 
-    //Load Data to GPU
+    // Load Data to GPU
     glTexImage2D(GL_TEXTURE_2D, 0, Format, Width, Height, 0, Format, GL_UNSIGNED_BYTE, Data);
-    //Wrapping
+
+    // Wrapping
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    //Filtering
+
+    // Filtering
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
     // Mimapping
     glGenerateMipmap(GL_TEXTURE_2D);
 

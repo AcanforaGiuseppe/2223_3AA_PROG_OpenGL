@@ -9,7 +9,6 @@ layout (location = 2) in mat4 inst_mvp;
     layout (location = 5) in vec4 inst_mvp;
  */
 
-
 out vec2 vert_uv_out;
 //uniform mat4 mvp;
 //uniform mat4 mvp[8];

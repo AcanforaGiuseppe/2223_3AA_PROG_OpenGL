@@ -16,6 +16,7 @@ void Ex08PhongDraw::Start()
     obj_t* mesh = obj_parser_parse("resources/models/stormtrooper.obj");
 
     std::vector<float> Vertices;
+
     for(int i=0; i < mesh->face_count; ++i) 
     {
         obj_triangle_t& t = mesh->triangles[i];
@@ -50,18 +51,18 @@ void Ex08PhongDraw::Start()
     
     VerticeCount = Vertices.size() / 8;
 
-    //1. Create VAO
+    // 1. Create VAO
     glGenVertexArrays(1, &Vao);
     glBindVertexArray(Vao);
 
-    //2. Create VBO to load data
+    // 2. Create VBO to load data
     glGenBuffers(1, &Vbo);
     glBindBuffer(GL_ARRAY_BUFFER, Vbo);
 
     int DataSize = Vertices.size() * sizeof(float);
     glBufferData(GL_ARRAY_BUFFER, DataSize, Vertices.data(), GL_STATIC_DRAW);
 
-    //3. Link to Vertex Shader
+    // 3. Link to Vertex Shader
     GLuint Location_0 = 0;
     glVertexAttribPointer(Location_0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(Location_0);
@@ -74,7 +75,7 @@ void Ex08PhongDraw::Start()
     glVertexAttribPointer(Location_2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(5 * sizeof(float)));
     glEnableVertexAttribArray(Location_2);
 
-    //4. Set Viewport
+    // 4. Set Viewport
     glViewport(0, 0, 600, 400);
     glClearColor(0.5f, 0.5f, 0.5f, 1.f);
     Program->Bind();
@@ -87,7 +88,7 @@ void Ex08PhongDraw::Start()
     //glFrontFace(GL_CCW); //default
     //glCullFace(GL_BACK); //default
 
-    //camera
+    // Camera
     glm::vec3 Position = glm::vec3(0, 0, 8);
     glm::vec3 Direction = glm::vec3(0, 0, -1);
     glm::vec3 Up = glm::vec3(0, 1, 0);
@@ -98,7 +99,6 @@ void Ex08PhongDraw::Start()
 
     View = glm::lookAt(Position, Position + Direction, Up);
     Projection = glm::perspective(glm::radians(FovY), AspectRatio, ZNear, ZFar);
-
 
     glm::vec3 PointLightPos = glm::vec3(1, 0, 0);
     Program->SetUniform("point_light_pos", PointLightPos);
@@ -127,7 +127,7 @@ void Ex08PhongDraw::Update(float InDeltaTime)
 
 
     glm::mat4 Model2 = glm::mat4(1.f);
-    //Commented-out just to see the effect of glViewport call clear as possibile
+    // Commented-out just to see the effect of glViewport call clear as possibile
     //Model2 = glm::translate(Model2, glm::vec3(2, -4, 0));
     //Model2 = glm::rotate(Model2, glm::radians(Angle), glm::vec3(0, 1, 0));
     //Model2 = glm::scale(Model2, glm::vec3(2.f));

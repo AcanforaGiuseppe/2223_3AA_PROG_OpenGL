@@ -13,11 +13,10 @@ void main()
     vec4 wood_texel = texture(wood_tex, vert_uv_out);
 
 /*
-    if (inst_index % 2 == 0) {
+    if (inst_index % 2 == 0)
         frag_color = smile_texel;
-    } else {
+    else
         frag_color = wood_texel;
-    }
 */
     // eventually with function: mod(inst_index, 2);
     frag_color = mix(smile_texel, wood_texel, inst_index % 2);

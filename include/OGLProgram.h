@@ -1,4 +1,5 @@
 #pragma once
+
 #include <string>
 #include <glad/glad.h>
 #include "Common.h"
@@ -16,6 +17,7 @@ public:
     void SetUniform(const std::string& name, glm::mat4 matrix);
     void SetUniform(const std::string& name, glm::vec2 vect);
     void SetUniform(const std::string& name, glm::vec3 vect);
+    
 private:
     GLuint ProgramId;
 };

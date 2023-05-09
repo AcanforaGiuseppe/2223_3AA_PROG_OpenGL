@@ -6,14 +6,14 @@
 #include <vector>
 #include <glm/gtc/matrix_transform.hpp>
 
-
 void Ex13CubeMappingDraw::Start()
 {
     Program = new OGLProgram("resources/shaders/cubemapping.vert", "resources/shaders/cubemapping.frag");
     
-    std::vector<float> Vertices = {
-        //FRONT FACE
-        //positions     
+    std::vector<float> Vertices =
+    {
+        // positions     
+        // FRONT FACE
         -1, -1, 1,     //bottom-left
          1, -1, 1,     //bottom-right
          1,  1, 1,     //top-right
@@ -21,7 +21,7 @@ void Ex13CubeMappingDraw::Start()
         -1, -1, 1,     //bottom-left
          1,  1, 1,     //top-right
 
-        //BACK FACE
+        // BACK FACE
          1, -1,-1,  //bottom-left
         -1, -1,-1,  //bottom-right
         -1,  1,-1,  //top-right
@@ -29,7 +29,7 @@ void Ex13CubeMappingDraw::Start()
          1, -1,-1,   //bottom-left
         -1,  1,-1,   //top-right
 
-         //LEFT FACE
+         // LEFT FACE
         -1, -1,-1,  //bottom-left
         -1, -1, 1,  //bottom-right
         -1,  1, 1,  //top-right
@@ -37,7 +37,7 @@ void Ex13CubeMappingDraw::Start()
         -1, -1,-1,  //bottom-left
         -1,  1, 1,  //top-right
 
-        //RIGHT FACE
+        // RIGHT FACE
          1, -1, 1, //bottom-left
          1, -1,-1, //bottom-right
          1,  1,-1, //top-right
@@ -45,7 +45,7 @@ void Ex13CubeMappingDraw::Start()
          1, -1, 1, //bottom-left
          1,  1,-1, //top-right
 
-         //TOP FACE
+         // TOP FACE
          -1, 1, 1, //bottom-left
           1, 1, 1, //bottom-right
           1, 1,-1, //top-right
@@ -53,7 +53,7 @@ void Ex13CubeMappingDraw::Start()
          -1, 1, 1, //bottom-left
           1, 1,-1, //top-right
          
-         //BOTTOM FACE
+         // BOTTOM FACE
          -1,-1,-1, //bottom-left
           1,-1,-1, //bottom-right
           1,-1, 1, //top-right
@@ -62,24 +62,24 @@ void Ex13CubeMappingDraw::Start()
           1,-1, 1, //top-right
     };
 
-    //1. Create VAO
+    // 1. Create VAO
     glGenVertexArrays(1, &Vao);
     glBindVertexArray(Vao);
 
-    //2. Create VBO to load data
+    // 2. Create VBO to load data
     glGenBuffers(1, &Vbo);
     glBindBuffer(GL_ARRAY_BUFFER, Vbo);
 
     int DataSize = Vertices.size() * sizeof(float);
     glBufferData(GL_ARRAY_BUFFER, DataSize, Vertices.data(), GL_STATIC_DRAW);
 
-    //3. Link to Vertex Shader
+    // 3. Link to Vertex Shader
     GLuint Location_0 = 0;
     glVertexAttribPointer(Location_0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(Location_0);
 
 
-    //4. Set Viewport
+    // 4. Set Viewport
     glViewport(0, 0, 600, 400);
     glClearColor(0.5f, 0.5f, 0.5f, 1.f);
     Program->Bind();
@@ -93,7 +93,7 @@ void Ex13CubeMappingDraw::Start()
         "resources/textures/cubemap/back.jpg"
         );
 
-    //camera
+    // Camera
     glm::vec3 Position = glm::vec3(0, 0, 8);
     glm::vec3 Direction = glm::vec3(0, 0, -1);
     glm::vec3 Up = glm::vec3(0, 1, 0);
@@ -105,9 +105,7 @@ void Ex13CubeMappingDraw::Start()
     View = glm::lookAt(Position, Position + Direction, Up);
     Projection = glm::perspective(glm::radians(FovY), AspectRatio, ZNear, ZFar);
 
-
     ObjProgram = new OGLProgram("resources/shaders/cubemapping_obj.vert", "resources/shaders/cubemapping_obj.frag");
-
 
     glEnable(GL_DEPTH_TEST);
     //glEnable(GL_CULL_FACE);
@@ -116,7 +114,6 @@ void Ex13CubeMappingDraw::Start()
 void Ex13CubeMappingDraw::Update(float InDeltaTime)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 
  /* DRAW OBJ  SOL2
     glEnable(GL_CULL_FACE);
@@ -132,7 +129,6 @@ void Ex13CubeMappingDraw::Update(float InDeltaTime)
     ObjProgram->SetUniform("mvp", ObjMvp);
     glDrawArrays(GL_TRIANGLES, 0, 36);
 */
-
 
     static float ElapsedTime = 0;
     ElapsedTime += InDeltaTime;
@@ -166,8 +162,6 @@ void Ex13CubeMappingDraw::Update(float InDeltaTime)
     ObjProgram->Bind();
     ObjProgram->SetUniform("mvp", ObjMvp);
     glDrawArrays(GL_TRIANGLES, 0, 36);
-
-
 }
 
 void Ex13CubeMappingDraw::Destroy()

@@ -18,13 +18,15 @@
 #include "Ex13CubeMappingDraw.h"
 
 #ifdef _WIN32
-extern "C" {
+extern "C"
+{
 	__declspec(dllexport) unsigned long NvOptimusEnablement = 0x00000001;
 	__declspec(dllexport) unsigned long AmdPowerXpressRequestHighPerformance = 0x00000001;
 }
 #endif
 
-int main() {
+int main()
+{
 	std::cout << "It's Working" << std::endl;
 
 	OGLWindow Win{600, 400, "OpenGL Window"};
@@ -52,6 +54,7 @@ int main() {
 	{
 		float DeltaTime = Win.GetDeltaTime();
 		TimeElapsed += DeltaTime;
+		
 		if (TimeElapsed >= 1.f)
 		{
 			TimeElapsed -= 1.f;

@@ -5,14 +5,14 @@
 #include <fstream>
 #include <vector>
 
-
 void Ex11PostFX::Start()
 {
     Program = new OGLProgram("resources/shaders/postfx_scene.vert", "resources/shaders/postfx_scene.frag");
     
-    std::vector<float> Vertices = {
-        //FRONT FACE
-        //positions      uvs
+    std::vector<float> Vertices =
+    {
+        //positions    uvs
+        // FRONT FACE
         -1, -1, 1,   0, 0,    //bottom-left
          1, -1, 1,   1, 0,    //bottom-right
          1,  1, 1,   1, 1,    //top-right
@@ -20,7 +20,7 @@ void Ex11PostFX::Start()
         -1, -1, 1,   0, 0,    //bottom-left
          1,  1, 1,   1, 1,    //top-right
 
-        //BACK FACE
+        // BACK FACE
          1, -1,-1,   0, 0,    //bottom-left
         -1, -1,-1,   1, 0,    //bottom-right
         -1,  1,-1,   1, 1,    //top-right
@@ -28,7 +28,7 @@ void Ex11PostFX::Start()
          1, -1,-1,   0, 0,    //bottom-left
         -1,  1,-1,   1, 1,    //top-right
 
-         //LEFT FACE
+        // LEFT FACE
         -1, -1,-1,   0, 0,    //bottom-left
         -1, -1, 1,   1, 0,    //bottom-right
         -1,  1, 1,   1, 1,    //top-right
@@ -36,7 +36,7 @@ void Ex11PostFX::Start()
         -1, -1,-1,   0, 0,    //bottom-left
         -1,  1, 1,   1, 1,    //top-right
 
-        //RIGHT FACE
+        // RIGHT FACE
          1, -1, 1,   0, 0,    //bottom-left
          1, -1,-1,   1, 0,    //bottom-right
          1,  1,-1,   1, 1,    //top-right
@@ -44,7 +44,7 @@ void Ex11PostFX::Start()
          1, -1, 1,   0, 0,    //bottom-left
          1,  1,-1,   1, 1,    //top-right
 
-         //TOP FACE
+         // TOP FACE
          -1, 1, 1,   0, 0,    //bottom-left
           1, 1, 1,   1, 0,    //bottom-right
           1, 1,-1,   1, 1,    //top-right
@@ -52,7 +52,7 @@ void Ex11PostFX::Start()
          -1, 1, 1,   0, 0,    //bottom-left
           1, 1,-1,   1, 1,    //top-right
          
-         //BOTTOM FACE
+         // BOTTOM FACE
          -1,-1,-1,   0, 0,    //bottom-left
           1,-1,-1,   1, 0,    //bottom-right
           1,-1, 1,   1, 1,    //top-right
@@ -61,18 +61,18 @@ void Ex11PostFX::Start()
           1,-1, 1,   1, 1,    //top-right
     };
 
-    //1. Create VAO
+    // 1. Create VAO
     glGenVertexArrays(1, &Vao);
     glBindVertexArray(Vao);
 
-    //2. Create VBO to load data
+    // 2. Create VBO to load data
     glGenBuffers(1, &Vbo);
     glBindBuffer(GL_ARRAY_BUFFER, Vbo);
 
     int DataSize = Vertices.size() * sizeof(float);
     glBufferData(GL_ARRAY_BUFFER, DataSize, Vertices.data(), GL_STATIC_DRAW);
 
-    //3. Link to Vertex Shader
+    // 3. Link to Vertex Shader
     GLuint Location_0 = 0;
     glVertexAttribPointer(Location_0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(Location_0);
@@ -81,7 +81,7 @@ void Ex11PostFX::Start()
     glVertexAttribPointer(Location_1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(Location_1);
 
-    //4. Set Viewport
+    // 4. Set Viewport
     glViewport(0, 0, 600, 400);
     glClearColor(0.5f, 0.5f, 0.5f, 1.f);
     //Program->Bind();
@@ -100,20 +100,20 @@ void Ex11PostFX::Start()
     glGenFramebuffers(1, &SceneFbo);
     glBindFramebuffer(GL_FRAMEBUFFER, SceneFbo);
 
-    //1. Attach Color to framebuffer
+    // 1. Attach Color to framebuffer
     glGenTextures(1, &SceneTexture);
     glBindTexture(GL_TEXTURE_2D, SceneTexture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 600, 400, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    //Wrapping
+    // Wrapping
     //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, SceneTexture, 0);
 
-    //2. Attach depth to framebuffer
+    // 2. Attach depth to framebuffer
     glGenRenderbuffers(1, &SceneRbo);
     glBindRenderbuffer(GL_RENDERBUFFER, SceneRbo);
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 600, 400);
@@ -121,44 +121,42 @@ void Ex11PostFX::Start()
     glBindRenderbuffer(GL_RENDERBUFFER, 0); //unbind current render buffer.
 
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) 
-    {
         DIE("Framebuffer not ready!");
-    }
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0); //Unbind and back to SwapChain framebuffer
 
     /* POST FX PIPELINE */
     QuadProgram = new OGLProgram("resources/shaders/postfx_quad.vert", "resources/shaders/postfx_quad.frag");
 
-    std::vector<float> QuadVertices = { //NDC to avoid trasformations in vert shader
+    std::vector<float> QuadVertices = { // NDC to avoid trasformations in vert shader
         // Positions   // Uvs
-        -1.f, -1.f,  0.f, 0.f,  //bottom left
-         1.f, -1.f,  1.f, 0.f,  //bottom right
-        -1.f,  1.f,  0.f, 1.f,  //top left
+        -1.f, -1.f,  0.f, 0.f,  // bottom left
+         1.f, -1.f,  1.f, 0.f,  // bottom right
+        -1.f,  1.f,  0.f, 1.f,  // top left
 
-        -1.f,  1.f,  0.f, 1.f,  //top left
-         1.f, -1.f,  1.f, 0.f,  //bottom right
-         1.f,  1.f,  1.f, 1.f   //top right    
+        -1.f,  1.f,  0.f, 1.f,  // top left
+         1.f, -1.f,  1.f, 0.f,  // bottom right
+         1.f,  1.f,  1.f, 1.f   // top right    
     };
 
-    //1. Create VAO
+    // 1. Create VAO
     glGenVertexArrays(1, &QuadVao);
     glBindVertexArray(QuadVao);
 
-    //2. Create VBO to load data
+    // 2. Create VBO to load data
     glGenBuffers(1, &QuadVbo);
     glBindBuffer(GL_ARRAY_BUFFER, QuadVbo);
 
     glBufferData(GL_ARRAY_BUFFER, QuadVertices.size() * sizeof(float), QuadVertices.data(), GL_STATIC_DRAW);
 
-    //3. Link to Vertex Shader
+    // 3. Link to Vertex Shader
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
-    //MASK EFFECT
+    // MASK EFFECT
     MaskText = new OGLTexture("resources/textures/mask_circle.png");
     MaskText->SetWrappingClampToEdge();
 }
@@ -168,7 +166,7 @@ void Ex11PostFX::Update(float InDeltaTime)
     static float ElapsedTime = 0;
     ElapsedTime += InDeltaTime;
     
-    //DRAW SCENE
+    // DRAW SCENE
     glBindFramebuffer(GL_FRAMEBUFFER, SceneFbo);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
@@ -180,7 +178,7 @@ void Ex11PostFX::Update(float InDeltaTime)
     WoodText->Bind(GL_TEXTURE0);
     glDrawArrays(GL_TRIANGLES, 0, 36);
 
-    //DRAW QUAD (Apply FX)
+    // DRAW QUAD (Apply FX)
     glBindFramebuffer(GL_FRAMEBUFFER, 0); //back to Swapchain as output
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);
@@ -204,14 +202,11 @@ void Ex11PostFX::Destroy()
     glDeleteBuffers(1, &Vbo);
     delete Program;
     delete WoodText;
-
     glDeleteFramebuffers(1, &SceneFbo);
     glDeleteTextures(1, &SceneTexture);
     glDeleteRenderbuffers(1, &SceneRbo);
-
     glDeleteVertexArrays(1, &QuadVao);
     glDeleteBuffers(1, &QuadVbo);
     delete QuadProgram;
-
     delete MaskText;
 }

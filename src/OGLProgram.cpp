@@ -18,13 +18,14 @@ static std::string ReadFile(const std::string& InPath)
     InputStream.read(&Text[0], Size);
 
     InputStream.close();
+
     return Text;
 }
 
 
 static GLuint CreateShader(const std::string& InPath, GLuint InShaderType)
 {
-    //Read file
+    // Read file
     std::string Text = ReadFile(InPath);
     const char* ShaderSource = Text.c_str();
 
@@ -34,6 +35,7 @@ static GLuint CreateShader(const std::string& InPath, GLuint InShaderType)
 
     GLint Success;
     glGetShaderiv(ShaderId, GL_COMPILE_STATUS, &Success);
+
     if (!Success) 
     {
         GLint MaxLogLength;
@@ -46,7 +48,7 @@ static GLuint CreateShader(const std::string& InPath, GLuint InShaderType)
         DIE(LogStr);
     }
 
-    //Load and Compile on GPU
+    // Load and Compile on GPU
     return ShaderId;
 }
 
@@ -59,6 +61,7 @@ static GLuint CreateProgram(GLuint VertexId, GLuint FragmentId)
 
     GLint Success;
     glGetProgramiv(ProgramId, GL_LINK_STATUS, &Success);
+
     if (!Success) 
     {
         GLint MaxLogLength;
@@ -73,10 +76,9 @@ static GLuint CreateProgram(GLuint VertexId, GLuint FragmentId)
 
     glDeleteShader(VertexId);
     glDeleteShader(FragmentId);
+
     return ProgramId;
 }
-
-
 
 OGLProgram::OGLProgram(const std::string& InVertShaderPath, const std::string& InFragShaderPath)
 {
@@ -100,11 +102,13 @@ GLuint OGLProgram::ID()
     return ProgramId;
 }
 
-void OGLProgram::SetUniform(const std::string& name, const Color& color) {
+void OGLProgram::SetUniform(const std::string& name, const Color& color)
+{
        glUniform4fv(glGetUniformLocation(ID(), name.c_str()), 1, (GLfloat*)&color);
 }
 
-void OGLProgram::SetUniform(const std::string& name, float value) {
+void OGLProgram::SetUniform(const std::string& name, float value)
+{
        glUniform1f(glGetUniformLocation(ID(), name.c_str()), value);
 }
 
@@ -112,7 +116,6 @@ void OGLProgram::SetUniform(const std::string& name, glm::mat4 matrix)
 {
     glUniformMatrix4fv(glGetUniformLocation(ID(), name.c_str()), 1, GL_FALSE, &matrix[0][0]);
 }
-
 
 void OGLProgram::SetUniform(const std::string& name, glm::vec3 vect) 
 {

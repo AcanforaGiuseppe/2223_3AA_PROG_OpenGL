@@ -9,14 +9,16 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-enum MeshVertexDataFilter{
+enum MeshVertexDataFilter
+{
     POSITION = 1 << 0,
     UV = 1 << 1,
     NORMAL = 1 << 2,
     ALL = POSITION | UV | NORMAL
 };
 
-void ReadMeshVertexData(const std::string &InObjPath, MeshVertexDataFilter InFilter, std::vector<float> &OutVertices, int &OutVerticeCount){
+void ReadMeshVertexData(const std::string &InObjPath, MeshVertexDataFilter InFilter, std::vector<float> &OutVertices, int &OutVerticeCount)
+{
     obj_t* mesh = obj_parser_parse(InObjPath.c_str());
 
     for(int i=0; i < mesh->face_count; ++i) 
@@ -26,16 +28,19 @@ void ReadMeshVertexData(const std::string &InObjPath, MeshVertexDataFilter InFil
         for (int j = 0; j < 3; j++)
         {
             obj_vertex_t* v = (obj_vertex_t*)((size_t)t + sizeof(obj_vertex_t) * j);
-            if(InFilter & MeshVertexDataFilter::POSITION){
+            if(InFilter & MeshVertexDataFilter::POSITION)
+            {
                 OutVertices.push_back(v->position.x);
                 OutVertices.push_back(v->position.y);
                 OutVertices.push_back(v->position.z);
             }
-            if(InFilter & MeshVertexDataFilter::UV){
+            if(InFilter & MeshVertexDataFilter::UV)
+            {
                 OutVertices.push_back(v->uv.x);
                 OutVertices.push_back(v->uv.y);
             }
-            if(InFilter & MeshVertexDataFilter::NORMAL){
+            if(InFilter & MeshVertexDataFilter::NORMAL)
+            {
                 OutVertices.push_back(v->normal.x);
                 OutVertices.push_back(v->normal.y);
                 OutVertices.push_back(v->normal.z);
@@ -46,27 +51,26 @@ void ReadMeshVertexData(const std::string &InObjPath, MeshVertexDataFilter InFil
     obj_parser_free(mesh);
 }
 
-
 void Ex10Exercise::Start()
 {
-    //Storm Trupper scenario
+    // Storm Trupper scenario
     Program = new OGLProgram("resources/shaders/exercise.vert", "resources/shaders/exercise.frag");
     
     std::vector<float> Vertices;
     ReadMeshVertexData("resources/models/stormtrooper.obj", MeshVertexDataFilter::ALL, Vertices, VerticeCount);
 
-    //1. Create VAO
+    // 1. Create VAO
     glGenVertexArrays(1, &Vao);
     glBindVertexArray(Vao);
 
-    //2. Create VBO to load data
+    // 2. Create VBO to load data
     glGenBuffers(1, &Vbo);
     glBindBuffer(GL_ARRAY_BUFFER, Vbo);
 
     int DataSize = Vertices.size() * sizeof(float);
     glBufferData(GL_ARRAY_BUFFER, DataSize, Vertices.data(), GL_STATIC_DRAW);
 
-    //3. Link to Vertex Shader
+    // 3. Link to Vertex Shader
     GLuint Location_0 = 0;
     glVertexAttribPointer(Location_0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(Location_0);
@@ -79,7 +83,7 @@ void Ex10Exercise::Start()
     glVertexAttribPointer(Location_2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(5 * sizeof(float)));
     glEnableVertexAttribArray(Location_2);
 
-    //4. Set Viewport
+    // 4. Set Viewport
     glViewport(0, 0, 600, 400);
     glClearColor(0.5f, 0.5f, 0.5f, 1.f);
 
@@ -89,7 +93,7 @@ void Ex10Exercise::Start()
     //glFrontFace(GL_CCW); //default
     //glCullFace(GL_BACK); //default
 
-    //camera
+    // Camera
     glm::vec3 Position = glm::vec3(0, 0, 8);
     glm::vec3 Direction = glm::vec3(0, 0, -1);
     glm::vec3 Up = glm::vec3(0, 1, 0);
@@ -101,7 +105,6 @@ void Ex10Exercise::Start()
     View = glm::lookAt(Position, Position + Direction, Up);
     Projection = glm::perspective(glm::radians(FovY), AspectRatio, ZNear, ZFar);
 
-
     PointLightPos = glm::vec3(1, 0, 0);
     Program->Bind();
     //Program->SetUniform("point_light_pos", PointLightPos);
@@ -109,12 +112,12 @@ void Ex10Exercise::Start()
     StormText = new OGLTexture("resources/models/stormtrooper.png");
     StormText->Bind(GL_TEXTURE0);
 
-
-    //Light scenario
+    // Light scenario
     CubeProgram = new OGLProgram("resources/shaders/exercise_light.vert", "resources/shaders/exercise_light.frag");
-    std::vector<float> CubeVertices = {
-        //FRONT FACE
+    std::vector<float> CubeVertices =
+    {
         //positions      uvs
+        // FRONT FACE
         -1, -1, 1,   0, 0,    //bottom-left
          1, -1, 1,   1, 0,    //bottom-right
          1,  1, 1,   1, 1,    //top-right
@@ -122,7 +125,7 @@ void Ex10Exercise::Start()
         -1, -1, 1,   0, 0,    //bottom-left
          1,  1, 1,   1, 1,    //top-right
 
-        //BACK FACE
+        // BACK FACE
          1, -1,-1,   0, 0,    //bottom-left
         -1, -1,-1,   1, 0,    //bottom-right
         -1,  1,-1,   1, 1,    //top-right
@@ -130,7 +133,7 @@ void Ex10Exercise::Start()
          1, -1,-1,   0, 0,    //bottom-left
         -1,  1,-1,   1, 1,    //top-right
 
-         //LEFT FACE
+        // LEFT FACE
         -1, -1,-1,   0, 0,    //bottom-left
         -1, -1, 1,   1, 0,    //bottom-right
         -1,  1, 1,   1, 1,    //top-right
@@ -138,7 +141,7 @@ void Ex10Exercise::Start()
         -1, -1,-1,   0, 0,    //bottom-left
         -1,  1, 1,   1, 1,    //top-right
 
-        //RIGHT FACE
+        // RIGHT FACE
          1, -1, 1,   0, 0,    //bottom-left
          1, -1,-1,   1, 0,    //bottom-right
          1,  1,-1,   1, 1,    //top-right
@@ -146,7 +149,7 @@ void Ex10Exercise::Start()
          1, -1, 1,   0, 0,    //bottom-left
          1,  1,-1,   1, 1,    //top-right
 
-         //TOP FACE
+        // TOP FACE
          -1, 1, 1,   0, 0,    //bottom-left
           1, 1, 1,   1, 0,    //bottom-right
           1, 1,-1,   1, 1,    //top-right
@@ -154,7 +157,7 @@ void Ex10Exercise::Start()
          -1, 1, 1,   0, 0,    //bottom-left
           1, 1,-1,   1, 1,    //top-right
          
-         //BOTTOM FACE
+        // BOTTOM FACE
          -1,-1,-1,   0, 0,    //bottom-left
           1,-1,-1,   1, 0,    //bottom-right
           1,-1, 1,   1, 1,    //top-right
@@ -166,39 +169,39 @@ void Ex10Exercise::Start()
 
     CubeVerticeCount = CubeVertices.size() / 5;
 
-    //1. Create VAO
+    // 1. Create VAO
     glGenVertexArrays(1, &CubeVao);
     glBindVertexArray(CubeVao);
     
-    //2. Create VBO to load data
+    // 2. Create VBO to load data
     glGenBuffers(1, &CubeVbo);
     glBindBuffer(GL_ARRAY_BUFFER, CubeVbo);
 
     int CubeDataSize = CubeVertices.size() * sizeof(float);
     glBufferData(GL_ARRAY_BUFFER, CubeDataSize, CubeVertices.data(), GL_STATIC_DRAW);
 
-    //3. Link to Vertex Shader
+    // 3. Link to Vertex Shader
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
     //CubeProgram->Bind();
     //CubeProgram->SetUniform("color", Color{1,1,1,1});
 
-    //Suzanne Scenario
+    // Suzanne Scenario
     std::vector<float> SuzanneVertices;
     ReadMeshVertexData("resources/models/suzanne.obj", MeshVertexDataFilter::POSITION, SuzanneVertices, SuzanneVerticeCount);
-    //1. Create VAO
+    // 1. Create VAO
     glGenVertexArrays(1, &SuzanneVao);
     glBindVertexArray(SuzanneVao);
     
-    //2. Create VBO to load data
+    // 2. Create VBO to load data
     glGenBuffers(1, &SuzanneVbo);
     glBindBuffer(GL_ARRAY_BUFFER, SuzanneVbo);
 
     int SuzanneDataSize = SuzanneVertices.size() * sizeof(float);
     glBufferData(GL_ARRAY_BUFFER, SuzanneDataSize, SuzanneVertices.data(), GL_STATIC_DRAW);
 
-    //3. Link to Vertex Shader
+    // 3. Link to Vertex Shader
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
@@ -218,8 +221,7 @@ void Ex10Exercise::Update(float InDeltaTime)
     float Angle = 20.f * ElapsedTime;
 
     {  
-        //Rendering Stoormtrup
-        
+        // Rendering Stoormtrup
         //Model =  translate * rotate * scale;
         glm::mat4 Model = glm::mat4(1.f);
         Model = glm::translate(Model, StormTrupperPos);
@@ -234,19 +236,16 @@ void Ex10Exercise::Update(float InDeltaTime)
         Program->SetUniform("point_light_pos", PhongLightPos);
         glDrawArrays(GL_TRIANGLES, 0, VerticeCount);
     }
-    {
 
-        //Rendering Light as a Cube   
+    {
+        // Rendering Light as a Cube   
         glm::mat4 CubeModel = glm::mat4(1.f);
         CubeModel = glm::translate(CubeModel, PointLightPos + StormTrupperPos + glm::vec3(0,4,0)); //vec3(1, 0, 0) + vec3(3, -4, 0) + pivot cancelling
         CubeModel = glm::scale(CubeModel, glm::vec3(0.2f));
-
         glm::mat4 T1 = glm::translate(glm::mat4(1.f), StormTrupperPos);
         glm::mat4 Rotation = glm::rotate(glm::mat4(1.f), glm::radians(Angle), glm::vec3(0, 1, 0));
         glm::mat4 T2 = glm::translate(glm::mat4(1.f), -StormTrupperPos);
         glm::mat4 RotationAround = T1 * Rotation * T2;
-
-
         glm::mat4 CubeMvp = Projection * View * RotationAround * CubeModel;
 
         glBindVertexArray(CubeVao);
@@ -255,10 +254,10 @@ void Ex10Exercise::Update(float InDeltaTime)
         CubeProgram->SetUniform("color", Color{1,1,1,1});
         glDrawArrays(GL_TRIANGLES, 0, CubeVerticeCount);
 
-        //Update Light position for phong
+        // Update Light position for phong
         glm::mat4 LightWorldMat = RotationAround * CubeModel;
 
-        //Opengl: Matrix data starage: Column Major
+        // Opengl: Matrix data starage: Column Major
         /*
         // [ Colum0, Column1, Column2, Column3 ]
         float Tx = LightWorldMat[3][0];
@@ -288,17 +287,14 @@ void Ex10Exercise::Update(float InDeltaTime)
             glm::vec3 dir = glm::vec3(x,0,z);
             glm::mat4 SuzanneModel = glm::mat4(1.f);
             SuzanneModel = glm::translate(SuzanneModel, StormTrupperPos + dir * glm::vec3(2) + glm::vec3(0,7,0));
-            
             SuzanneModel = glm::rotate(SuzanneModel, glm::radians(180.f), glm::vec3(0,1,0)); //Only if to take account for suzanne that look in the opposite direction of the screen
             glm::mat4 lookAtResult = glm::lookAt(glm::vec3(0), dir, glm::vec3(0,1,0));
             SuzanneModel *= glm::inverse(lookAtResult);
             SuzanneModel = glm::scale(SuzanneModel, glm::vec3(0.5f));
-
             glm::mat4 T1 = glm::translate(glm::mat4(1.f), StormTrupperPos);
             glm::mat4 Rotation = glm::rotate(glm::mat4(1.f), glm::radians(Angle), glm::vec3(0, 1, 0));
             glm::mat4 T2 = glm::translate(glm::mat4(1.f), -StormTrupperPos);
             glm::mat4 RotationAround = T1 * Rotation * T2;
-
             glm::mat4 SuzanneMvp = Projection * View * RotationAround * SuzanneModel;
              
             CubeProgram->SetUniform("mvp", SuzanneMvp);
@@ -306,7 +302,6 @@ void Ex10Exercise::Update(float InDeltaTime)
             glDrawArrays(GL_TRIANGLES, 0, SuzanneVerticeCount);
         }
     }
-
 }
 
 void Ex10Exercise::Destroy()

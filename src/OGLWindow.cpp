@@ -4,8 +4,7 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 
-OGLWindow::OGLWindow(int InWidth, int InHeight, const std::string& InTitle) 
-    : Width(InWidth), Height(InHeight), Title(InTitle)
+OGLWindow::OGLWindow(int InWidth, int InHeight, const std::string& InTitle) : Width(InWidth), Height(InHeight), Title(InTitle)
 {
     DeltaTime = 0;
     LastTime = 0;
@@ -23,6 +22,7 @@ OGLWindow::OGLWindow(int InWidth, int InHeight, const std::string& InTitle)
 	GLFWmonitor* monitor = fullScreen ? glfwGetPrimaryMonitor() : NULL;
 	GLFWwindow* window = glfwCreateWindow(width, height, title.c_str(), monitor, NULL);
     */
+   
     RawWindow = glfwCreateWindow(Width, Height, Title.c_str(), NULL, NULL);
     DIE_ON_NULL(RawWindow, "Window failed!");
     
@@ -64,12 +64,14 @@ void OGLWindow::Update()
 	glfwPollEvents();
 }
 
-void OGLWindow::SetTitle(const std::string& InTitle)  {
+void OGLWindow::SetTitle(const std::string& InTitle)
+{
     Title = InTitle;
     glfwSetWindowTitle(RawWindow, Title.c_str());
 }
 
-glm::vec2 OGLWindow::MousePosition() const {
+glm::vec2 OGLWindow::MousePosition() const
+{
     double posX, posY;
     glfwGetCursorPos(RawWindow, &posX, &posY);
     return glm::vec2((float)posX, (float)posY);
